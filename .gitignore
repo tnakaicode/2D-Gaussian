@@ -11,5 +11,5 @@ __pycache__/
 *.docx
 
 # Temp
-#temp/*
+temp/*
 temp_*/*
