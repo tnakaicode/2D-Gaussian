@@ -4,7 +4,7 @@ import sys
 import os
 import time
 from optparse import OptionParser
-sys.path.append(os.path.join('./'))
+sys.path.append(os.path.join('../'))
 
 from src.profile import integrate_simps, gaussian_func
 from src.plot import plot_contour_sub
@@ -23,4 +23,4 @@ if __name__ == '__main__':
     mesh = np.meshgrid(px, py)
     func = gaussian_func(mesh, sxy=[25, -50], wxy=[20, 15], rot=30)
 
-    plot_contour_sub(mesh, func, loc=[25, -50], dirname="./temp/contour")
+    plot_contour_sub(mesh, func, loc=[25, -50])
