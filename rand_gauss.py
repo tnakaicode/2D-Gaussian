@@ -2,18 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 from scipy.interpolate import interpn
-import scipy.stats as st
 from sklearn.datasets.samples_generator import make_blobs
 
 n_components = 3
 X, truth = make_blobs(n_samples=300, centers=n_components,
                       cluster_std=[2, 1.5, 1],
                       random_state=42)
-plt.figure()
-plt.scatter(X[:, 0], X[:, 1], s=50, c=truth)
-plt.title(f"Example of a mixture of {n_components} distributions")
-plt.xlabel("x")
-plt.ylabel("y")
 
 # Extract x and y
 x = X[:, 0]
@@ -31,8 +25,17 @@ xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
 
 positions = np.vstack([xx.ravel(), yy.ravel()])
 values = np.vstack([x, y])
-kernel = st.gaussian_kde(values)
+kernel = gaussian_kde(values)
 f = np.reshape(kernel(positions).T, xx.shape)
+
+fig = plt.figure(figsize=(8, 8))
+ax = fig.gca()
+ax.set_xlim(xmin, xmax)
+ax.set_ylim(ymin, ymax)
+ax.scatter(X[:, 0], X[:, 1], s=50, c=truth)
+ax.set_title(f"Example of a mixture of {n_components} distributions")
+ax.set_xlabel("x")
+ax.set_ylabel("y")
 
 fig = plt.figure(figsize=(8, 8))
 ax = fig.gca()
@@ -53,7 +56,7 @@ for j in range(len(cset.allsegs)):
 plt.legend()
 
 mu, sigma = 0, 0.1  # mean and standard deviation
-s = np.random.normal(mu, sigma, 1000)
+s = np.random.normal(mu, sigma, 40000)
 
 
 plt.figure()
@@ -64,8 +67,8 @@ plt.plot(bins, 1 / (sigma * np.sqrt(2 * np.pi)) *
 
 
 # Generate fake data
-x = np.random.normal(size=1000)
-y = x * 3 + np.random.normal(size=1000)
+x = np.random.normal(size=40000)
+y = x * 3 + np.random.normal(size=40000)
 
 # Calculate the point density
 xy = np.vstack([x, y])
