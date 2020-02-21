@@ -12,6 +12,15 @@ from linecache import getline, clearcache
 from scipy.integrate import simps
 
 
+def gaussian_func(mesh, sxy=[0, 0], wxy=[10, 10], rot=0.0):
+    x, y = mesh[0] - sxy[0], mesh[1] - sxy[1]
+    px = x * np.cos(rot) - y * np.sin(rot)
+    py = y * np.cos(rot) + x * np.sin(rot)
+    fx = np.exp(-0.5 * (px / wxy[0])**2)
+    fy = np.exp(-0.5 * (py / wxy[1])**2)
+    return fx * fy
+
+
 def integrate_simps(mesh, func):
     nx, ny = func.shape
     px, py = mesh[0][int(nx / 2), :], mesh[1][:, int(ny / 2)]
@@ -43,6 +52,18 @@ def moment_seq(mesh, func, num):
     return seq
 
 
+def get_cov(mesh, func, dxy):
+    g_mesh = [mesh[0] - dxy[0], mesh[1] - dxy[1]]
+    Mxx = moment(g_mesh, func, (2, 0))
+    Myy = moment(g_mesh, func, (0, 2))
+    Mxy = moment(g_mesh, func, (1, 1))
+    mat = np.array([
+        [Mxx, Mxy],
+        [Mxy, Myy],
+    ])
+    return mat
+
+
 def get_centroid(mesh, func):
     dx = moment(mesh, func, (1, 0))
     dy = moment(mesh, func, (0, 1))
@@ -56,16 +77,13 @@ def get_weight(mesh, func, dxy):
     return np.sqrt(lx) * np.sqrt(2), np.sqrt(ly) * np.sqrt(2)
 
 
-def get_cov(mesh, func, dxy):
+def get_covariance(mesh, func):
+    dxy = get_centroid(mesh, func)
     g_mesh = [mesh[0] - dxy[0], mesh[1] - dxy[1]]
     Mxx = moment(g_mesh, func, (2, 0))
     Myy = moment(g_mesh, func, (0, 2))
     Mxy = moment(g_mesh, func, (1, 1))
-    mat = np.array([
-        [Mxx, Mxy],
-        [Mxy, Myy],
-    ])
-    return mat
+    return np.array([[Mxx, Mxy], [Mxy, Myy]])
 
 
 def get_wxy(mesh, func):
@@ -96,12 +114,3 @@ def get_wxy(mesh, func):
         g_func = gaussian_func(mesh, sxy, wxy, rot)
     #print (wxy, np.rad2deg(rot))
     return wxy, rot
-
-
-def gaussian_func(mesh, sxy=[0, 0], wxy=[10, 10], rot=0.0):
-    x, y = mesh[0] - sxy[0], mesh[1] - sxy[1]
-    px = x * np.cos(rot) - y * np.sin(rot)
-    py = y * np.cos(rot) + x * np.sin(rot)
-    fx = np.exp(-0.5 * (px / wxy[0])**2)
-    fy = np.exp(-0.5 * (py / wxy[1])**2)
-    return fx * fy
