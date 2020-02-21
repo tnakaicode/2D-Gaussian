@@ -6,3 +6,6 @@
 <https://towardsdatascience.com/simple-example-of-2d-density-plots-in-python-83b83b934f67>  
 
 <https://pypi.org/project/mpl-scatter-density/>
+
+MNE : Magnetoencephalography (MEG) and Electroencephalography (EEG) in Python <http://mne.tools>  
+MNE：Pythonの脳磁図（MEG）および脳波(EEG)
