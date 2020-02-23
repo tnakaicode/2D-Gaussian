@@ -22,7 +22,7 @@ if __name__ == '__main__':
     px = np.linspace(-1, 1, nx) * lx - sx
     py = np.linspace(-1, 1, ny) * ly - sy
     mesh = np.meshgrid(px, py)
-    func = gaussian_func(mesh, sxy=[25, -50], wxy=[15, 20], rot=0.2)
+    func = gaussian_func(mesh, sxy=[25, -50], wxy=[15, 20], rot=15.0)
 
     cov = get_covariance(mesh, func)
     wxy, mat = np.linalg.eig(cov)
@@ -31,7 +31,8 @@ if __name__ == '__main__':
     print(wxy, rot, np.rad2deg(rot))
     print(get_wxy(mesh, func))
     print(cov)
-    print(np.stack(mesh,0))
+    print(mat)
+    print(np.rad2deg(-np.arcsin(mat[0, 1])), np.rad2deg(np.arccos(mat[0, 0])))
 
     """
     Multivariate normal probability density function.
@@ -49,7 +50,7 @@ if __name__ == '__main__':
     %(_mvn_doc_callparams_note)s
     """
 
-    fxy1 = multivariate_normal.pdf(np.stack(mesh, -1), cov=cov)
+    fxy1 = multivariate_normal.pdf(np.stack(mesh, -1), mean=[25, -50], cov=cov)
 
     plot_contour_sub(mesh, func, loc=[25, -50])
     plot_contour_sub(mesh, fxy1, loc=[25, -50],
