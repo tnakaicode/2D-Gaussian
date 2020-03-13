@@ -4,16 +4,18 @@ import sys
 import os
 import time
 from optparse import OptionParser
-sys.path.append(os.path.join('../'))
 
-from src.profile import integrate_simps, gaussian_func, get_covariance, get_wxy
+sys.path.append(os.path.join('../'))
+from src.base import create_tempdir, create_temnum
 from src.plot import plot_contour_sub
+from src.profile import integrate_simps, gaussian_func, get_covariance, get_wxy
 
 if __name__ == '__main__':
     argvs = sys.argv
     parser = OptionParser()
     opt, argc = parser.parse_args(argvs)
     print(opt, argc)
+    tmpdir = create_tempdir(-1)
 
     nx, ny = 100, 100
     lx, ly = 100, 100
@@ -30,4 +32,4 @@ if __name__ == '__main__':
     print(wxy, rot, np.rad2deg(rot))
     print(get_wxy(mesh, func))
 
-    plot_contour_sub(mesh, func, loc=[25, -50])
+    plot_contour_sub(mesh, func, loc=[25, -50], dirname=tmpdir+"gauss_single")
