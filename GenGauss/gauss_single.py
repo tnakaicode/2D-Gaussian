@@ -6,7 +6,7 @@ import time
 from optparse import OptionParser
 
 sys.path.append(os.path.join('../'))
-from src.base import create_tempdir, create_temnum
+from src.base import create_tempdir, create_tempnum
 from src.plot import plot_contour_sub
 from src.profile import integrate_simps, gaussian_func, get_covariance, get_wxy
 

@@ -35,6 +35,14 @@ import logging
 logging.getLogger('matplotlib').setLevel(logging.ERROR)
 
 
+def split_filename(filename):
+    dirname = os.path.dirname(filename)
+    basename = os.path.basename(filename)
+    sub_name = os.path.basename(os.path.dirname(filename))
+    rootname, extname = os.path.splitext(basename)
+    return dirname, rootname, extname
+
+
 def create_tempdir(flag=1):
     print(datetime.date.today())
     datenm = "{0:%Y%m%d}".format(datetime.date.today())
