@@ -16,75 +16,7 @@ from optparse import OptionParser
 
 sys.path.append(os.path.join('../'))
 from src.base import plot2d
-
-
-class PlotSignal(plot2d):
-
-    def __init__(self, aspect='equal'):
-        plot2d.__init__(self, aspect=aspect)
-
-    def plot_signal_each(self, pt, sg, pngname=None):
-        Ft = pt[1] - pt[0]
-
-        self.new_fig(aspect="auto")
-        self.axs.set_title("Signal")
-        self.axs.plot(pt, sg, color='C0')
-        self.axs.set_xlabel("Time")
-        self.axs.set_ylabel("Amplitude")
-        self.SavePng(self.tempname + "-Signal.png")
-
-        self.new_fig(aspect="auto")
-        self.axs.set_title("Magnitude Spectrum")
-        self.axs.magnitude_spectrum(sg, Fs=Ft, color='C1')
-        self.SavePng(self.tempname + "-Spec.png")
-
-        self.new_fig(aspect="auto")
-        self.axs.set_title("Log. Magnitude Spectrum")
-        self.axs.magnitude_spectrum(sg, Fs=Ft, scale='dB', color='C1')
-        self.SavePng(self.tempname + "-Specdb10.png")
-
-        self.new_fig(aspect="auto")
-        self.axs.set_title("Phase Spectrum ")
-        self.axs.phase_spectrum(sg, Fs=Ft, color='C2')
-        self.SavePng(self.tempname + "-SpecPhas.png")
-
-        self.new_fig(aspect="auto")
-        self.axs.set_title("Angle Spectrum")
-        self.axs.angle_spectrum(sg, Fs=Ft, color='C2')
-        self.SavePng(self.tempname + "-SpecAngl.png")
-
-    def plot_signal(self, pt, sg, pngname=None):
-        self.new_fig()
-        ax1 = self.add_axs(3, 2, 1, aspect="auto")
-        ax2 = self.add_axs(3, 2, 2, aspect="auto")
-        ax3 = self.add_axs(3, 2, 3, aspect="auto")
-        ax4 = self.add_axs(3, 2, 4, aspect="auto")
-        ax5 = self.add_axs(3, 2, 5, aspect="auto")
-        ax6 = self.add_axs(3, 2, 6, aspect="auto")
-        Ft = pt[1] - pt[0]
-
-        ax1.set_title("Signal")
-        ax1.plot(pt, sg, color='C0')
-        ax1.set_xlabel("Time")
-        ax1.set_ylabel("Amplitude")
-
-        ax2.remove()
-
-        # plot different spectrum types:
-        ax3.set_title("Magnitude Spectrum")
-        ax3.magnitude_spectrum(sg, Fs=Ft, color='C1')
-
-        ax4.set_title("Log. Magnitude Spectrum")
-        ax4.magnitude_spectrum(sg, Fs=Ft, scale='dB', color='C1')
-
-        ax5.set_title("Phase Spectrum ")
-        ax5.phase_spectrum(sg, Fs=Ft, color='C2')
-
-        ax6.set_title("Angle Spectrum")
-        ax6.angle_spectrum(sg, Fs=Ft, color='C2')
-
-        self.fig.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
-        self.SavePng_Serial()
+from src.SignalAnalysis import PlotSignal
 
 
 if __name__ == '__main__':
