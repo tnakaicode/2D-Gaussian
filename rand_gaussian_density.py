@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 from scipy.interpolate import interpn
 
+from src.base import plot2d
+
 mu, sigma = 0, 0.1  # mean and standard deviation
 num = 1000
 s = np.random.normal(mu, sigma, num)
@@ -19,18 +21,14 @@ z = gaussian_kde(xy)(xy)
 idx = z.argsort()
 xs, ys, zs = x[idx], y[idx], z[idx]
 
-fig, ax = plt.subplots()
-ax.scatter(x, y, c=z, s=100, edgecolor='')
+obj = plot2d()
+obj.axs.scatter(x, y, c=z, s=100, edgecolor='')
+obj.SavePng_Serial()
 
-fig, ax = plt.subplots()
-ax.scatter(xs, ys, c=zs, s=50, edgecolor='')
+obj.new_fig(aspect="auto")
+obj.axs.scatter(xs, ys, c=zs, s=50, edgecolor='')
+obj.SavePng_Serial()
 
-
-"""
-Scatter plot colored by 2d histogram
-"""
-
-fig, ax = plt.subplots()
 data, x_e, y_e = np.histogram2d(x, y, bins=20)
 z = interpn((0.5 * (x_e[1:] + x_e[:-1]), 0.5 * (y_e[1:] + y_e[:-1])),
             data, np.vstack([x, y]).T, method="splinef2d", bounds_error=False)
@@ -38,5 +36,7 @@ z = interpn((0.5 * (x_e[1:] + x_e[:-1]), 0.5 * (y_e[1:] + y_e[:-1])),
 # Sort the points by density, so that the densest points are plotted last
 idx = z.argsort()
 x, y, z = x[idx], y[idx], z[idx]
-ax.scatter(x, y, c=z)
-plt.show()
+
+obj.new_fig(aspect="auto")
+obj.axs.scatter(x, y, c=z)
+obj.SavePng_Serial()
