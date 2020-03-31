@@ -11,28 +11,7 @@ from optparse import OptionParser
 
 sys.path.append(os.path.join('../'))
 from src.base import create_tempdir, plot2d
-
-
-class PlotSignal(plot2d):
-
-    def __init__(self, aspect='equal'):
-        plot2d.__init__(self, aspect=aspect)
-
-    def plot_signal(self, pt, sg, pngname=None):
-        self.new_fig()
-        ax1 = self.add_axs(2, 1, 1, aspect="auto")
-        ax2 = self.add_axs(2, 1, 2, aspect="auto")
-
-        # Plot signal wave [V]
-        ax1.plot(pt, sg)
-        ax1.set_title('Signal with noise')
-        ax1.set_ylabel('Voltage (V)')
-
-        # Plot in Power [dB]
-        ax2.plot(pt, 10 * np.log10(sg**2))
-        ax2.set_ylabel('Power (dB)')
-        ax2.set_xlabel('Time (s)')
-        self.SavePng_Serial(pngname)
+from src.SignalAnalysis import PlotSignal
 
 
 if __name__ == '__main__':

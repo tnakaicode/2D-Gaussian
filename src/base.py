@@ -597,10 +597,10 @@ class plotocc (SetDir):
         cov = ConvexHull(pnt, qhull_options='QJ')
 
         #pts_ord = []
-        #print(cov)
-        #print(cov.simplices)
-        #print(cov.vertices)
-        #for idx in cov.vertices:
+        # print(cov)
+        # print(cov.simplices)
+        # print(cov.vertices)
+        # for idx in cov.vertices:
         #    print(idx, pnt[idx])
         #    pts_ord.append(gp_Pnt(*pnt[idx]))
 
