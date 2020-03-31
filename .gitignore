@@ -12,8 +12,5 @@ __pycache__/
 
 # Temp
 temp/*
-<<<<<<< HEAD
 temp_*/*
-=======
->>>>>>> 116f0050b0b1097dacc63d7d98ee8c541e1128fb
 */temp_*/*
