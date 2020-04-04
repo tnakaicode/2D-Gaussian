@@ -228,13 +228,19 @@ class plot2d (PlotBase):
         sx, sy = sxy
         xs, xe = mesh[0][0, 0], mesh[0][0, -1]
         ys, ye = mesh[1][0, 0], mesh[1][-1, 0]
-        mx = np.searchsorted(mesh[0][0, :], sx) - 1
-        my = np.searchsorted(mesh[1][:, 0], sy) - 1
+        dx, dy = mesh[0][0, 1] - mesh[0][0, 0], mesh[1][1, 0] - mesh[1][0, 0]
+        mx, my = int((sy - ys) / dy), int((sx - xs) / dx)
+        #mx = np.searchsorted(mesh[0][0, :], sx) - 1
+        #my = np.searchsorted(mesh[1][:, 0], sy) - 1
 
+        #self.ax_x.plot(mesh[0][mx, :], func[mx, :])
+        #self.ax_x.set_title("y = {:.2f}".format(sy))
+        #self.ax_y.plot(func[:, my], mesh[1][:, my])
+        #self.ax_y.set_title("x = {:.2f}".format(sx))
         self.ax_x.plot(mesh[0][mx, :], func[mx, :])
-        self.ax_x.set_title("y = {:.2f}".format(sy))
+        self.ax_x.set_title("y = {:.2f} - {:d}/{:d}".format(sy, mx, nx))
         self.ax_y.plot(func[:, my], mesh[1][:, my])
-        self.ax_y.set_title("x = {:.2f}".format(sx))
+        self.ax_y.set_title("x = {:.2f} - {:d}/{:d}".format(sx, my, ny))
         im = self.axs.contourf(*mesh, func, cmap="jet")
         self.fig.colorbar(im, ax=self.axs, shrink=0.9)
         self.fig.tight_layout()
@@ -597,10 +603,10 @@ class plotocc (SetDir):
         cov = ConvexHull(pnt, qhull_options='QJ')
 
         #pts_ord = []
-        #print(cov)
-        #print(cov.simplices)
-        #print(cov.vertices)
-        #for idx in cov.vertices:
+        # print(cov)
+        # print(cov.simplices)
+        # print(cov.vertices)
+        # for idx in cov.vertices:
         #    print(idx, pnt[idx])
         #    pts_ord.append(gp_Pnt(*pnt[idx]))
 
