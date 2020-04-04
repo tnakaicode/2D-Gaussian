@@ -1,16 +1,17 @@
 import numpy as np
 
 from src.base import plot2d
-from src.profile import integrate_simps, get_covariance, gaussian_func
+from src.profile import integrate_simps, gaussian_func
+from src.profile import get_centroid, get_covariance
 
 
 class GaussianCalc (plot2d):
 
     def __init__(self, aspect='equal'):
         plot2d.__init__(self, aspect=aspect)
-        px = np.linspace(-1, 1, 100) * 200
-        py = np.linspace(-1, 1, 200) * 200
-        self.mesh = np.meshgrid(px, py)
+        px = np.linspace(-1, 1, 100) * 200 - 50
+        py = np.linspace(-1, 1, 200) * 250 + 100
+        self.mesh = np.meshgrid(py, px)
         self.func = gaussian_func(self.mesh)
 
     def SetGaussian(self, sxy=[0, 0], wxy=[50, 50], rot=0.0):
@@ -18,6 +19,46 @@ class GaussianCalc (plot2d):
 
     def PlotGauss(self):
         self.contourf_sub(self.mesh, self.func, pngname=self.tempname + ".png")
+
+        dat = []
+        sxy = get_centroid(self.mesh, self.func)
+        cov = get_covariance(self.mesh, self.func)
+        wxy, mat = np.linalg.eig(cov)
+        wxy = np.sqrt(wxy)
+        rot = -np.arcsin(mat[0, 1])
+        g_func = gaussian_func(self.mesh, sxy, wxy, rot)
+        gcf = integrate_simps(self.mesh, g_func * self.func)
+        dat.append(np.array([*wxy, gcf]))
+
+        x, y = self.mesh[0] - sxy[0], self.mesh[1] - sxy[1]
+        px = x * np.cos(rot) - y * np.sin(rot)
+        py = y * np.cos(rot) + x * np.sin(rot)
+        g_mesh = [px, py]
+        for i in range(20):
+            wx = np.sqrt(2) * np.sqrt(
+                integrate_simps(g_mesh, g_mesh[0]**2 * g_func * self.func) /
+                integrate_simps(g_mesh, g_func * self.func)
+            )
+            wy = np.sqrt(2) * np.sqrt(
+                integrate_simps(g_mesh, g_mesh[1]**2 * g_func * self.func) /
+                integrate_simps(g_mesh, g_func * self.func)
+            )
+            wxy = [wx, wy]
+            g_func = gaussian_func(self.mesh, sxy, wxy, rot)
+            gcf = integrate_simps(self.mesh, g_func * self.func)
+            dat.append(np.array([wx, wy, gcf]))
+        dat = np.array(dat)
+        print(dat.shape)
+
+        self.new_2Dfig(aspect="auto")
+        self.axs.plot(dat[:, 0])
+        self.axs.plot(dat[:, 1])
+        self.SavePng(obj.tempname + "-wxy.png")
+
+        self.new_2Dfig(aspect="auto")
+        self.axs.plot(dat[:, 2])
+        self.SavePng(obj.tempname + "-gcf.png")
+
 
 
 if __name__ == '__main__':
