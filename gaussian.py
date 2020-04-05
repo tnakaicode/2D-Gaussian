@@ -5,6 +5,14 @@ from src.profile import integrate_simps, gaussian_func
 from src.profile import get_centroid, get_covariance
 
 
+def gaussian_mat(mesh, sxy=[0, 0], mat=np.zeros([2, 2])):
+    x, y = mesh[0] - sxy[0], mesh[1] - sxy[1]
+    fx = np.exp(-0.5 * (x**2 / mat[0, 0]))
+    fy = np.exp(-0.5 * (y**2 / mat[1, 1]))
+    fxy = np.exp(-0.5 * (x * y / (mat[0, 1])))
+    return fx * fy / fxy
+
+
 class GaussianCalc (plot2d):
 
     def __init__(self, aspect='equal'):
@@ -13,11 +21,21 @@ class GaussianCalc (plot2d):
         py = np.linspace(-1, 1, 200) * 250 + 100
         self.mesh = np.meshgrid(py, px)
         self.func = gaussian_func(self.mesh)
+        self.nois = np.random.normal(0.0, 0.05, self.func.shape)
 
     def SetGaussian(self, sxy=[0, 0], wxy=[50, 50], rot=0.0):
-        self.func = gaussian_func(self.mesh, sxy=sxy, wxy=wxy, rot=rot)
+        self.func = gaussian_func(self.mesh, sxy=sxy, wxy=wxy, rot=rot) + self.nois
+
+    def SetGaussianMat(self, sxy=[0, 0], wxy=[50, 50], rot=0.0):
+        rho = 1.0
+        mat = np.matrix([
+            [wxy[0]**2, rho * wxy[0] * wxy[1]],
+            [rho * wxy[0] * wxy[1], wxy[1]**2]
+        ])
+        self.func = gaussian_mat(self.mesh, sxy=sxy, mat=mat) + self.nois
 
     def PlotGauss(self):
+        self.create_tempdir(-1)
         self.contourf_sub(self.mesh, self.func, pngname=self.tempname + ".png")
 
         dat = []
@@ -45,6 +63,7 @@ class GaussianCalc (plot2d):
             )
             wxy = [wx, wy]
             g_func = gaussian_func(self.mesh, sxy, wxy, rot)
+            self.contourf_sub(self.mesh, g_func)
             gcf = integrate_simps(self.mesh, g_func * self.func)
             dat.append(np.array([wx, wy, gcf]))
         dat = np.array(dat)
@@ -60,10 +79,10 @@ class GaussianCalc (plot2d):
         self.SavePng(obj.tempname + "-gcf.png")
 
 
-
 if __name__ == '__main__':
     obj = GaussianCalc()
     obj.SetGaussian(wxy=[50.0, 25.0], rot=30.0)
+    obj.SetGaussianMat(wxy=[50.0, 25.0], rot=30.0)
     obj.PlotGauss()
 
     rho = 0.5

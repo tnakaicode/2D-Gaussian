@@ -128,6 +128,7 @@ class SetDir (object):
         else:
             self.tmpdir = "./temp_{}{:03}/".format(
                 self.datenm, self.dirnum - 1)
+        self.tempname = self.tmpdir + self.rootname
         print(self.tmpdir)
 
 
