@@ -7,12 +7,17 @@ from src.profile import integrate_simps, gaussian_func
 from src.profile import get_centroid, get_covariance
 
 
+def gaussian(x, cov=0.1, off=0.25):
+    return np.exp(-0.5 * x**2 / cov) * np.random.normal(0.0, cov, x.shape) + off
+
+
 def gaussian_mat(mesh, sxy=[0, 0], mat=np.zeros([2, 2])):
     x, y = mesh[0] - sxy[0], mesh[1] - sxy[1]
-    fx = np.exp(-0.5 * (x**2 / mat[0, 0]))
-    fy = np.exp(-0.5 * (y**2 / mat[1, 1]))
-    fxy = np.exp(-0.5 * (x * y / (mat[0, 1])))
-    return fx * fy / fxy
+    inv = np.linalg.inv(mat)
+    fxx = np.exp(-0.5 * (x**2 * inv[0, 0]))
+    fyy = np.exp(-0.5 * (y**2 * inv[1, 1]))
+    fxy = np.exp(-0.5 * (x * y * (inv[0, 1] + inv[1, 0])))
+    return fxx * fyy * fxy
 
 
 class GaussianCalc (plot2d):
@@ -23,20 +28,26 @@ class GaussianCalc (plot2d):
         py = np.linspace(-1, 1, 200) * 250 + 100
         self.mesh = np.meshgrid(py, px)
         self.func = gaussian_func(self.mesh)
-        self.nois = np.random.normal(0.0, 0.05, self.func.shape)
+        #self.nois = np.random.normal(0.0, 0.05, self.func.shape)
+        self.snr = 0.05
+        self.nois = gaussian(self.func)
 
     def SetGaussian(self, sxy=[0, 0], wxy=[50, 50], rot=0.0):
-        self.func = gaussian_func(
-            self.mesh, sxy=sxy, wxy=wxy, rot=rot) + self.nois
+        self.func = gaussian_func(self.mesh, sxy=sxy, wxy=wxy, rot=rot)
+        self.nois = gaussian(self.func, cov=self.snr)
+        self.func += self.nois
 
     def SetGaussianMat(self, sxy=[0, 0], wxy=[50, 50], rot=0.0):
-        rho = 1.0
+        #rho = np.cos(np.deg2rad(rot)) / (wxy[1] / wxy[0])
+        rho = 0.0 / (wxy[1] / wxy[0])
         mat = np.matrix([
             [wxy[0]**2, rho * wxy[0] * wxy[1]],
             [rho * wxy[0] * wxy[1], wxy[1]**2]
         ])
         print(mat)
-        self.func = gaussian_mat(self.mesh, sxy=sxy, mat=mat) + self.nois
+        self.func = gaussian_mat(self.mesh, sxy=sxy, mat=mat)
+        self.nois = gaussian(self.func, cov=self.snr)
+        self.func += self.nois
 
     def PlotGauss(self):
         self.create_tempdir(-1)
@@ -119,9 +130,9 @@ class GaussianCalc (plot2d):
 
 if __name__ == '__main__':
     obj = GaussianCalc()
-    obj.SetGaussian(wxy=[50.0, 25.0], rot=30.0)
-    #obj.SetGaussianMat(wxy=[50.0, 25.0], rot=30.0)
-
+    obj.SetGaussian(wxy=[50.0, 25.0], rot=0.0)
+    print(get_covariance(obj.mesh, obj.func))
+    obj.SetGaussianMat(wxy=[50.0, 25.0], rot=0.0)
     print(get_covariance(obj.mesh, obj.func))
     obj.PlotGauss()
     obj.PlotGaussMat()
