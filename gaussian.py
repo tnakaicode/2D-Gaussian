@@ -24,7 +24,8 @@ class GaussianCalc (plot2d):
         self.nois = np.random.normal(0.0, 0.05, self.func.shape)
 
     def SetGaussian(self, sxy=[0, 0], wxy=[50, 50], rot=0.0):
-        self.func = gaussian_func(self.mesh, sxy=sxy, wxy=wxy, rot=rot) + self.nois
+        self.func = gaussian_func(
+            self.mesh, sxy=sxy, wxy=wxy, rot=rot) + self.nois
 
     def SetGaussianMat(self, sxy=[0, 0], wxy=[50, 50], rot=0.0):
         rho = 1.0
@@ -78,12 +79,45 @@ class GaussianCalc (plot2d):
         self.axs.plot(dat[:, 2])
         self.SavePng(obj.tempname + "-gcf.png")
 
+    def PlotGaussMat(self):
+        self.create_tempdir(-1)
+        self.contourf_sub(self.mesh, self.func, pngname=self.tempname + ".png")
+
+        dat = []
+        sxy = get_centroid(self.mesh, self.func)
+        cov = get_covariance(self.mesh, self.func)
+        g_func = gaussian_mat(self.mesh, sxy, cov)
+        gcf = integrate_simps(self.mesh, g_func * self.func)
+        wxy = [np.sqrt(cov[0, 0]), np.sqrt(cov[1, 1])]
+        dat.append(np.array([*wxy, gcf]))
+
+        x, y = self.mesh[0] - sxy[0], self.mesh[1] - sxy[1]
+        g_mesh = [x, y]
+        for i in range(20):
+            g_func = gaussian_mat(self.mesh, sxy, cov)
+            self.contourf_sub(self.mesh, g_func)
+            gcf = integrate_simps(self.mesh, g_func * self.func)
+            wxy = [np.sqrt(cov[0, 0]), np.sqrt(cov[1, 1])]
+            dat.append(np.array([*wxy, gcf]))
+        dat = np.array(dat)
+        print(dat.shape)
+
+        self.new_2Dfig(aspect="auto")
+        self.axs.plot(dat[:, 0])
+        self.axs.plot(dat[:, 1])
+        self.SavePng(obj.tempname + "-wxy.png")
+
+        self.new_2Dfig(aspect="auto")
+        self.axs.plot(dat[:, 2])
+        self.SavePng(obj.tempname + "-gcf.png")
+
 
 if __name__ == '__main__':
     obj = GaussianCalc()
     obj.SetGaussian(wxy=[50.0, 25.0], rot=30.0)
     obj.SetGaussianMat(wxy=[50.0, 25.0], rot=30.0)
     obj.PlotGauss()
+    obj.PlotGaussMat()
 
     rho = 0.5
     sxy = [10.0, 20.0]
