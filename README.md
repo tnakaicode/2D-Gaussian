@@ -22,7 +22,7 @@ A shape-free area created by the maximum physical state of the size tolerance sp
 To apply envelope conditions to dimensions, enter the size tolerance followed by. "E" stands for Envelope, which means that if a part that adheres to the size tolerance is included in the "envelope", which is a fully-shaped envelope with the maximum physical size, it will be accepted, otherwise it will be rejected. Is a symbol that indicates
 
 Bivariate case
-In the 2-dimensional nonsingular case ({\displaystyle k=rank(\sum )=2}{\displaystyle k=rank(\sum )=2}), the probability density function of a vector {\displaystyle {\text{[XY]′}}}{\displaystyle {\text{[XY]′}}} is:
+In the 2-dimensional nonsingular case (${\displaystyle k=rank(\sum )=2}$), the probability density function of a vector ${\displaystyle {\text{[XY]′}}}$ is:
 
 $$ {\displaystyle f(x,y)={\frac {1}{2\pi \sigma _{X}\sigma _{Y}{\sqrt {1-\rho ^{2}}}}}\exp \left(-{\frac {1}{2(1-\rho ^{2})}}\left[{\frac {(x-\mu _{X})^{2}}{\sigma _{X}^{2}}}+{\frac {(y-\mu _{Y})^{2}}{\sigma _{Y}^{2}}}-{\frac {2\rho (x-\mu _{X})(y-\mu _{Y})}{\sigma _{X}\sigma _{Y}}}\right]\right)} $$
 
@@ -37,3 +37,5 @@ ${\displaystyle y(x)=\operatorname {sgn}(\rho ){\frac {\sigma _{Y}}{\sigma _{X}}
 This is because this expression, with {\displaystyle sgn(\rho )}{\displaystyle sgn(\rho )} (where sgn is the Sign function) replaced by {\displaystyle \rho }\rho , is the best linear unbiased prediction of {\displaystyle Y}Y given a value of {\displaystyle X}X.[7]
 
 $$ {\displaystyle f(\mathbf {x} )=\left(\det \nolimits ^{*}(2\pi {\boldsymbol {\Sigma }})\right)^{-{\frac {1}{2}}}\,e^{-{\frac {1}{2}}(\mathbf {x} -{\boldsymbol {\mu }})^{\!{\mathsf {T}}}{\boldsymbol {\Sigma }}^{+}(\mathbf {x} -{\boldsymbol {\mu }})}} $$
+
+$$ f(x) = \frac{1}{\sqrt{(2 \pi)^k \det \Sigma}} \exp\left( -\frac{1}{2} (x - \mu)^T \Sigma^{-1} (x - \mu) \right) $$

@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import multivariate_normal
 
 from src.base import plot2d
 from src.profile import integrate_simps, gaussian_func
@@ -33,6 +35,7 @@ class GaussianCalc (plot2d):
             [wxy[0]**2, rho * wxy[0] * wxy[1]],
             [rho * wxy[0] * wxy[1], wxy[1]**2]
         ])
+        print(mat)
         self.func = gaussian_mat(self.mesh, sxy=sxy, mat=mat) + self.nois
 
     def PlotGauss(self):
@@ -65,6 +68,7 @@ class GaussianCalc (plot2d):
             wxy = [wx, wy]
             g_func = gaussian_func(self.mesh, sxy, wxy, rot)
             self.contourf_sub(self.mesh, g_func)
+            plt.close()
             gcf = integrate_simps(self.mesh, g_func * self.func)
             dat.append(np.array([wx, wy, gcf]))
         dat = np.array(dat)
@@ -96,6 +100,7 @@ class GaussianCalc (plot2d):
         for i in range(20):
             g_func = gaussian_mat(self.mesh, sxy, cov)
             self.contourf_sub(self.mesh, g_func)
+            plt.close()
             gcf = integrate_simps(self.mesh, g_func * self.func)
             wxy = [np.sqrt(cov[0, 0]), np.sqrt(cov[1, 1])]
             dat.append(np.array([*wxy, gcf]))
@@ -115,7 +120,9 @@ class GaussianCalc (plot2d):
 if __name__ == '__main__':
     obj = GaussianCalc()
     obj.SetGaussian(wxy=[50.0, 25.0], rot=30.0)
-    obj.SetGaussianMat(wxy=[50.0, 25.0], rot=30.0)
+    #obj.SetGaussianMat(wxy=[50.0, 25.0], rot=30.0)
+
+    print(get_covariance(obj.mesh, obj.func))
     obj.PlotGauss()
     obj.PlotGaussMat()
 
@@ -142,8 +149,3 @@ if __name__ == '__main__':
 
     xy = np.array(obj.mesh)
     sg.dot(mu.T)
-
-    for i in range(2):
-        print(xy[i])
-        print(sg[i])
-        print(mu[:, i])
